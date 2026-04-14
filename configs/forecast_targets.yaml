@@ -1,0 +1,23 @@
+primary_target:
+  name: HSS_t1_q75
+  horizon: 1
+  threshold_quantile: 0.75
+  threshold_source: train_only
+
+robustness_targets:
+  - name: HSS_t1_q80
+    horizon: 1
+    threshold_quantile: 0.80
+    threshold_source: train_only
+  - name: HSS_t1_q90
+    horizon: 1
+    threshold_quantile: 0.90
+    threshold_source: train_only
+  - name: HSS_t3_q75
+    horizon: 3
+    threshold_quantile: 0.75
+    threshold_source: train_only
+  - name: HSS_t5_q75
+    horizon: 5
+    threshold_quantile: 0.75
+    threshold_source: train_only
