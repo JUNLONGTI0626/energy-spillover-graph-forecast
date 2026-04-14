@@ -1,0 +1,97 @@
+project:
+  name: energy_spillover_graph_forecast
+  stage: connectedness
+  description: >
+    TVP-VAR-BK configuration for the six-variable daily energy system:
+    Electricity, Gas, WTI, Coal, Solar, and Wind.
+
+data:
+  input_file: data/processed/daily_returns.csv
+  date_column: date
+  variable_order:
+    - Electricity
+    - Gas
+    - WTI
+    - Coal
+    - Solar
+    - Wind
+  frequency: daily
+  drop_na: true
+  check_duplicates: true
+  enforce_variable_order: true
+
+sample:
+  start_date: null
+  end_date: null
+  use_subsample: false
+
+preprocessing:
+  standardize: false
+  winsorize: false
+  winsorize_limits: [0.01, 0.99]
+  difference_if_needed: false
+  log_transform: false
+
+model:
+  framework: TVP-VAR-BK
+  lag_order: 1
+  forecast_horizon: 10
+  connectedness_measure: generalized_fevd
+  time_varying_parameters: true
+  normalize_gfevd: true
+  scale_to_percent: true
+
+tvpvar:
+  prior_type: forgetting_factor
+  beta_decay: 0.99
+  covariance_decay: 0.99
+  min_observations: 150
+  stability_check: true
+  ridge_eps: 1.0e-08
+
+bk_frequency:
+  enabled: true
+  band_definition: baseline_3band
+  bands:
+    short:
+      lower: 1
+      upper: 5
+    medium:
+      lower: 6
+      upper: 20
+    long:
+      lower: 21
+      upper: 999
+  store_band_matrices: true
+  store_band_tci: true
+
+outputs:
+  output_dir: data/features
+  save_tci: true
+  save_to_from_net: true
+  save_pairwise_spillovers: true
+  save_total_spillover_matrix: true
+  save_frequency_connectedness: true
+  save_metadata: true
+
+output_files:
+  tci_daily: data/features/tci_daily_main.csv
+  directional_daily: data/features/directional_spillovers_daily_main.csv
+  net_daily: data/features/net_spillovers_daily_main.csv
+  pairwise_daily: data/features/pairwise_spillovers_daily_main.csv
+  total_matrix_daily: data/features/total_spillover_matrix_daily_main.parquet
+  frequency_daily: data/features/frequency_connectedness_daily_main.csv
+  frequency_matrices_dir: data/features/frequency_matrices_main
+  metadata: data/features/tvpvarbk_metadata_main.json
+  run_log: outputs/logs/tvpvarbk_run_report.md
+
+diagnostics:
+  save_summary_stats: true
+  save_missing_value_report: true
+  save_parameter_snapshot: false
+  check_output_dimensions: true
+  warn_if_unstable: true
+
+naming:
+  run_name: tvpvarbk_main_p1_h10
+  overwrite_existing: false
