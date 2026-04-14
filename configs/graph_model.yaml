@@ -1,0 +1,139 @@
+project:
+  name: energy_spillover_graph_forecast
+  stage: graph_forecasting
+  description: >
+    Topology-aware spatio-temporal graph transformer configuration
+    for forecasting future high spillover states in the six-variable
+    daily energy system.
+
+data:
+  graph_nodes_file: data/features/graph_nodes.parquet
+  graph_edges_file: data/features/graph_edges.parquet
+  graph_snapshots_dir: data/features/graph_snapshots
+  target_file: data/features/hss_primary.csv
+  date_column: date
+  target_column: HSS_t1_q75
+  node_order:
+    - Electricity
+    - Gas
+    - WTI
+    - Coal
+    - Solar
+    - Wind
+  use_edge_weights: true
+  directed_graph: true
+  align_on_intersection: true
+
+features:
+  node_features:
+    - return
+    - TO
+    - FROM
+    - NET
+  edge_feature: spillover_weight
+  include_self_loops: false
+  normalize_node_features: true
+  normalize_edge_weights: true
+  scaler_fit_scope: train_only
+
+task:
+  type: classification
+  primary_target: HSS_t1_q75
+  forecast_horizon: 1
+  classification_threshold: 0.50
+  class_weighting: balanced
+  positive_label: 1
+
+windowing:
+  lookback_length: 20
+  prediction_gap: 0
+  stride: 1
+  min_history_required: 20
+
+split:
+  method: chronological
+  train_ratio: 0.70
+  validation_ratio: 0.15
+  test_ratio: 0.15
+  shuffle: false
+
+model:
+  name: topology_aware_spatio_temporal_graph_transformer
+  input_dim: 4
+  hidden_dim: 64
+  edge_dim: 1
+  num_layers: 3
+  num_heads: 4
+  dropout: 0.10
+  activation: gelu
+  use_topology_bias: true
+  use_temporal_encoding: true
+  use_residual: true
+  readout: cls
+  output_dim: 1
+
+training:
+  random_seed: 42
+  device: auto
+  batch_size: 32
+  epochs: 100
+  optimizer: adamw
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  gradient_clip_norm: 1.0
+  early_stopping: true
+  early_stopping_patience: 10
+  monitor_metric: val_auc
+  scheduler:
+    enabled: true
+    type: reduce_on_plateau
+    factor: 0.5
+    patience: 5
+    min_lr: 1.0e-06
+
+loss:
+  type: bce_with_logits
+  pos_weight: auto
+  label_smoothing: 0.0
+
+benchmarks:
+  enabled: true
+  models:
+    - logit_baseline
+    - gru
+    - lstm
+    - tcn
+    - transformer_baseline
+
+evaluation:
+  primary_metrics:
+    - accuracy
+    - precision
+    - recall
+    - f1
+    - auc
+  secondary_metrics:
+    - brier_score
+  save_confusion_matrix: true
+  save_roc_curve: true
+  save_prediction_table: true
+
+outputs:
+  model_dir: outputs/models
+  table_dir: outputs/tables
+  figure_dir: outputs/figures
+  log_dir: outputs/logs
+
+output_files:
+  run_name: graph_transformer_hss_t1_q75_main
+  prediction_table: outputs/tables/predictions_hss_t1_q75_main.csv
+  model_comparison: outputs/tables/model_comparison_hss_t1_q75_main.csv
+  roc_curve: outputs/figures/roc_curve_hss_t1_q75_main.png
+  confusion_matrix: outputs/figures/confusion_matrix_hss_t1_q75_main.png
+  training_log: outputs/logs/model_training_report.md
+  evaluation_log: outputs/logs/evaluation_report.md
+
+reproducibility:
+  save_config_copy: true
+  save_train_val_test_indices: true
+  overwrite_existing: false
