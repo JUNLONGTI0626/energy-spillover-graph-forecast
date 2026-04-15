@@ -60,3 +60,9 @@ A task is done only if:
 3. a short log/report is written
 4. file names are clear and reproducible
 5. no raw data are modified
+
+For large tasks, do not make broad repo-wide edits in one step.
+Work in small scoped patches.
+Prefer one script or one config file per turn.
+Do not include raw data, model binaries, or generated outputs in large diffs.
+Commit or checkpoint frequently.
