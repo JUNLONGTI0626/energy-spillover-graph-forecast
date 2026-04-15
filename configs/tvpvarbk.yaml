@@ -35,7 +35,7 @@ preprocessing:
 model:
   framework: TVP-VAR-BK
   lag_order: 1
-  forecast_horizon: 10
+  forecast_horizon: 50
   connectedness_measure: generalized_fevd
   time_varying_parameters: true
   normalize_gfevd: true
@@ -51,20 +51,17 @@ tvpvar:
 
 bk_frequency:
   enabled: true
-  band_definition: baseline_3band
+  band_definition: baseline_2band
   bands:
     short:
       lower: 1
-      upper: 5
-    medium:
-      lower: 6
-      upper: 20
+      upper: 10
     long:
-      lower: 21
-      upper: 999
+      lower: 11
+      upper: 50
   store_band_matrices: true
   store_band_tci: true
-
+  
 outputs:
   output_dir: data/features
   save_tci: true
