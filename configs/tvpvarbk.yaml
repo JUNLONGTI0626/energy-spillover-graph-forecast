@@ -34,8 +34,8 @@ preprocessing:
 
 model:
   framework: TVP-VAR-BK
-  lag_order: 1
-  forecast_horizon: 50
+  lag_order: 3
+  forecast_horizon: 100
   connectedness_measure: generalized_fevd
   time_varying_parameters: true
   normalize_gfevd: true
@@ -55,10 +55,10 @@ bk_frequency:
   bands:
     short:
       lower: 1
-      upper: 10
+      upper: 20
     long:
-      lower: 11
-      upper: 50
+      lower: 21
+      upper: 100
   store_band_matrices: true
   store_band_tci: true
   
@@ -72,15 +72,15 @@ outputs:
   save_metadata: true
 
 output_files:
-  tci_daily: data/features/tci_daily_main.csv
-  directional_daily: data/features/directional_spillovers_daily_main.csv
-  net_daily: data/features/net_spillovers_daily_main.csv
-  pairwise_daily: data/features/pairwise_spillovers_daily_main.csv
-  total_matrix_daily: data/features/total_spillover_matrix_daily_main.parquet
-  frequency_daily: data/features/frequency_connectedness_daily_main.csv
-  frequency_matrices_dir: data/features/frequency_matrices_main
-  metadata: data/features/tvpvarbk_metadata_main.json
-  run_log: outputs/logs/tvpvarbk_run_report.md
+  tci_daily: data/features/tci_daily_baseline_p3_H100.csv
+  directional_daily: data/features/directional_spillovers_daily_baseline_p3_H100.csv
+  net_daily: data/features/net_spillovers_daily_baseline_p3_H100.csv
+  pairwise_daily: data/features/pairwise_spillovers_daily_baseline_p3_H100.csv
+  total_matrix_daily: data/features/total_spillover_matrix_daily_baseline_p3_H100.parquet
+  frequency_daily: data/features/frequency_connectedness_daily_baseline_p3_H100.csv
+  frequency_matrices_dir: data/features/frequency_matrices_baseline_p3_H100
+  metadata: data/features/tvpvarbk_metadata_baseline_p3_H100.json
+  run_log: outputs/logs/tvpvarbk_run_report_baseline_p3_H100.md
 
 diagnostics:
   save_summary_stats: true
@@ -90,5 +90,5 @@ diagnostics:
   warn_if_unstable: true
 
 naming:
-  run_name: tvpvarbk_main_p1_h10
+  run_name: tvpvarbk_baseline_p3_h100
   overwrite_existing: false
